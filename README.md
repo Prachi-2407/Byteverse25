@@ -84,6 +84,8 @@ lib/
 - Secondary Color: Color(0xff9acfd8) - Light Teal
 - Background: White
 - Text: Black
+## Dark mode
+- Dark mode is for future considerations and we have just added it as a prototype.
 ## Contributing:
 1. Fork the repository
 2. Create your feature branch
