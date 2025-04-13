@@ -24,11 +24,23 @@ class SchoolMealsApp extends StatelessWidget {
 
 class SchoolMealsScreen extends StatefulWidget {
   @override
-  _SchoolMealsScreenSchool createState() => _SchoolMealsScreenSchool();
+  _SchoolMealsScreenState createState() => _SchoolMealsScreenState();
 }
 
-class _SchoolMealsScreenSchool extends State<SchoolMealsScreen> {
+class _SchoolMealsScreenState extends State<SchoolMealsScreen> {
   String selectedSchool = 'ABC School';
+  List<Map<String, dynamic>> schools = [
+    {'name': 'ABC School', 'rating': 5},
+    {'name': 'DEF School', 'rating': 4},
+    {'name': 'XYZ School', 'rating': 5},
+    {'name': 'GHI School', 'rating': 4},
+    {'name': 'JKL School', 'rating': 5},
+    {'name': 'MNO School', 'rating': 4},
+    {'name': 'PQR School', 'rating': 5},
+    {'name': 'STU School', 'rating': 4},
+    {'name': 'VWX School', 'rating': 5},
+    {'name': 'YZA School', 'rating': 4},
+  ];
 
   PageController _pageController = PageController();
   int _currentPage = 0;
@@ -118,15 +130,19 @@ class _SchoolMealsScreenSchool extends State<SchoolMealsScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset('assets/images/image1.jpeg',
+                    child: Image.asset('assets/images/middaymeal1.jpg',
                         fit: BoxFit.cover),
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset('assets/images/image2.jpeg',
+                    child: Image.asset('assets/images/middaymeal2.jpeg',
                         fit: BoxFit.cover),
                   ),
-
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset('assets/images/middaymeal3.jpeg',
+                        fit: BoxFit.cover),
+                  ),
                 ],
               ),
             ),
@@ -136,11 +152,11 @@ class _SchoolMealsScreenSchool extends State<SchoolMealsScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
-            _buildStateScore('ABC School', '9.5 / 10'),
-            SizedBox(height: 10,),
-            _buildStateScore('XYZ School', '9.3 / 10'),
-            SizedBox(height: 10,),
-            _buildStateScore('DEF School', '9.1 / 10'),
+            ...schools
+                .where((school) => school['rating'] == 5)
+                .take(3)
+                .map((school) => _buildStateScore(school['name'], '${school['rating']} / 5'))
+                .toList(),
             const SizedBox(height: 20),
             Divider(
               color:Colors.black,
@@ -152,28 +168,55 @@ class _SchoolMealsScreenSchool extends State<SchoolMealsScreen> {
             ),
             const SizedBox(height: 10),
 
-            DropdownButton<String>(
-              value: selectedSchool,
-              isExpanded: true,
-              items: ['ABC School', 'DEF School', 'XYZ School', 'GHI School']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  selectedSchool = newValue!;
-                });
-              },
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ListView.builder(
+                itemCount: schools.length,
+                itemBuilder: (context, index) {
+                  final school = schools[index];
+                  return ListTile(
+                    title: Text(
+                      school['name'],
+                      style: TextStyle(
+                        fontWeight: selectedSchool == school['name']
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    trailing: Text(
+                      '${school['rating']} ★',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    selected: selectedSchool == school['name'],
+                    selectedTileColor: Color(0xff9acfd8).withOpacity(0.3),
+                    onTap: () {
+                      setState(() {
+                        selectedSchool = school['name'];
+                      });
+                    },
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: () {
-
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => KeralaNutritionCard(
+                      schoolName: selectedSchool,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xff9acfd8),
@@ -308,6 +351,70 @@ class ProfilePage extends StatelessWidget {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class KeralaNutritionCard extends StatelessWidget {
+  final String schoolName;
+  final Map<String, int> nutrients = {
+    'Protein': 85,
+    'Carbohydrates': 90,
+    'Fats': 70,
+    'Vitamins': 75,
+    'Minerals': 80,
+  };
+
+  KeralaNutritionCard({Key? key, required this.schoolName}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xff2b6f7c),
+        leadingWidth: 40,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(Icons.arrow_back, size: 26),
+        ),
+        title: Text(
+          "Nutrition",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          SizedBox(width: 26),
+        ],
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xff9acfd8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      schoolName,
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Add your nutrition chart or other content here
+              ],
+            ),
+          ),
         ),
       ),
     );
